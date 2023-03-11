@@ -76,6 +76,7 @@ async function onConversation() {
 
   if (lastContext && usingContext.value)
     options = { ...lastContext }
+  options.uuid = uuid
 
   addChat(
     +uuid,
@@ -106,6 +107,7 @@ async function onConversation() {
           let chunk = responseText
           if (lastIndex !== -1)
             chunk = responseText.substring(lastIndex)
+
           try {
             const data = JSON.parse(chunk)
             updateChat(
