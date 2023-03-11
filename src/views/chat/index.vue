@@ -32,8 +32,8 @@ const { scrollRef, scrollToBottom } = useScroll()
 const { usingContext, toggleUsingContext } = useUsingContext()
 // session uuid
 const { uuid } = route.params as { uuid: string }
-
-const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
+const sessionUuid = +uuid
+const dataSources = computed(() => chatStore.getChatByUuid(sessionUuid))
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !item.error)))
 
 const prompt = ref<string>('')
@@ -57,7 +57,7 @@ async function onConversation() {
   const chatUuid = Date.now()
 
   addChat(
-    +uuid,
+    sessionUuid,
     {
       uuid: chatUuid,
       dateTime: new Date().toLocaleString(),
@@ -78,10 +78,10 @@ async function onConversation() {
 
   if (lastContext && usingContext.value)
     options = { ...lastContext }
-  options.uuid = uuid
+  options.uuid = sessionUuid
 
   addChat(
-    +uuid,
+    sessionUuid,
     {
       uuid: chatUuid,
       dateTime: new Date().toLocaleString(),
@@ -99,7 +99,7 @@ async function onConversation() {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
-        sessionUuid: +uuid,
+        sessionUuid,
         chatUuid: chatUuid || Date.now(),
         regenerate: false,
         prompt: message,
@@ -117,7 +117,7 @@ async function onConversation() {
           try {
             const data = JSON.parse(chunk)
             updateChat(
-              +uuid,
+              sessionUuid,
               dataSources.value.length - 1,
               {
                 uuid: chatUuid,
@@ -154,7 +154,7 @@ async function onConversation() {
 
     if (error.message === 'canceled') {
       updateChatSome(
-        +uuid,
+        sessionUuid,
         dataSources.value.length - 1,
         {
           loading: false,
@@ -164,11 +164,11 @@ async function onConversation() {
       return
     }
 
-    const currentChat = getChatByUuidAndIndex(+uuid, dataSources.value.length - 1)
+    const currentChat = getChatByUuidAndIndex(sessionUuid, dataSources.value.length - 1)
 
     if (currentChat?.text && currentChat.text !== '') {
       updateChatSome(
-        +uuid,
+        sessionUuid,
         dataSources.value.length - 1,
         {
           text: `${currentChat.text}\n[${errorMessage}]`,
@@ -180,7 +180,7 @@ async function onConversation() {
     }
 
     updateChat(
-      +uuid,
+      sessionUuid,
       dataSources.value.length - 1,
       {
         uuid: chatUuid,
@@ -218,7 +218,7 @@ async function onRegenerate(index: number) {
   loading.value = true
   const chatUuid = dataSources.value[index].uuid
   updateChat(
-    +uuid,
+    sessionUuid,
     index,
     {
       uuid: chatUuid,
@@ -236,7 +236,7 @@ async function onRegenerate(index: number) {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
-        sessionUuid: +uuid,
+        sessionUuid,
         chatUuid: chatUuid || Date.now(),
         regenerate: true,
         prompt: message,
@@ -253,7 +253,7 @@ async function onRegenerate(index: number) {
           try {
             const data = JSON.parse(chunk)
             updateChat(
-              +uuid,
+              sessionUuid,
               index,
               {
                 uuid: chatUuid || Date.now(),
@@ -285,7 +285,7 @@ async function onRegenerate(index: number) {
   catch (error: any) {
     if (error.message === 'canceled') {
       updateChatSome(
-        +uuid,
+        sessionUuid,
         index,
         {
           loading: false,
@@ -297,7 +297,7 @@ async function onRegenerate(index: number) {
     const errorMessage = error?.message ?? t('common.wrong')
 
     updateChat(
-      +uuid,
+      sessionUuid,
       index,
       {
         uuid: chatUuid,
@@ -368,7 +368,7 @@ function handleDelete(index: number) {
     positiveText: t('common.yes'),
     negativeText: t('common.no'),
     onPositiveClick: () => {
-      chatStore.deleteChatByUuid(+uuid, index)
+      chatStore.deleteChatByUuid(sessionUuid, index)
     },
   })
 }
@@ -383,7 +383,7 @@ function handleClear() {
     positiveText: t('common.yes'),
     negativeText: t('common.no'),
     onPositiveClick: () => {
-      chatStore.clearChatByUuid(+uuid)
+      chatStore.clearChatByUuid(sessionUuid)
     },
   })
 }
