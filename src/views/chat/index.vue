@@ -9,7 +9,6 @@ import { useChat } from './hooks/useChat'
 import { useCopyCode } from './hooks/useCopyCode'
 import { useUsingContext } from './hooks/useUsingContext'
 import HeaderComponent from './components/Header/index.vue'
-import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore } from '@/store'
 import { fetchChatAPIProcess } from '@/api'
@@ -31,7 +30,7 @@ const { isMobile } = useBasicLayout()
 const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat()
 const { scrollRef, scrollToBottom } = useScroll()
 const { usingContext, toggleUsingContext } = useUsingContext()
-
+// session uuid
 const { uuid } = route.params as { uuid: string }
 
 const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
@@ -55,9 +54,12 @@ async function onConversation() {
 
   controller = new AbortController()
 
+  const chatUuid = Date.now()
+
   addChat(
     +uuid,
     {
+      uuid: chatUuid,
       dateTime: new Date().toLocaleString(),
       text: message,
       inversion: true,
@@ -81,6 +83,7 @@ async function onConversation() {
   addChat(
     +uuid,
     {
+      uuid: chatUuid,
       dateTime: new Date().toLocaleString(),
       text: '',
       loading: true,
@@ -96,6 +99,9 @@ async function onConversation() {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
+        sessionUuid: +uuid,
+        chatUuid: chatUuid || Date.now(),
+        regenerate: false,
         prompt: message,
         options,
         signal: controller.signal,
@@ -114,6 +120,7 @@ async function onConversation() {
               +uuid,
               dataSources.value.length - 1,
               {
+                uuid: chatUuid,
                 dateTime: new Date().toLocaleString(),
                 text: lastText + data.text ?? '',
                 inversion: false,
@@ -134,7 +141,7 @@ async function onConversation() {
             scrollToBottom()
           }
           catch (error) {
-          //
+            //
           }
         },
       })
@@ -176,6 +183,7 @@ async function onConversation() {
       +uuid,
       dataSources.value.length - 1,
       {
+        uuid: chatUuid,
         dateTime: new Date().toLocaleString(),
         text: errorMessage,
         inversion: false,
@@ -208,11 +216,12 @@ async function onRegenerate(index: number) {
     options = { ...requestOptions.options }
 
   loading.value = true
-
+  const chatUuid = dataSources.value[index].uuid
   updateChat(
     +uuid,
     index,
     {
+      uuid: chatUuid,
       dateTime: new Date().toLocaleString(),
       text: '',
       inversion: false,
@@ -227,6 +236,9 @@ async function onRegenerate(index: number) {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
+        sessionUuid: +uuid,
+        chatUuid: chatUuid || Date.now(),
+        regenerate: true,
         prompt: message,
         options,
         signal: controller.signal,
@@ -244,6 +256,7 @@ async function onRegenerate(index: number) {
               +uuid,
               index,
               {
+                uuid: chatUuid || Date.now(),
                 dateTime: new Date().toLocaleString(),
                 text: lastText + data.text ?? '',
                 inversion: false,
@@ -287,6 +300,7 @@ async function onRegenerate(index: number) {
       +uuid,
       index,
       {
+        uuid: chatUuid,
         dateTime: new Date().toLocaleString(),
         text: errorMessage,
         inversion: false,
@@ -426,20 +440,13 @@ onUnmounted(() => {
 <template>
   <div class="flex flex-col w-full h-full">
     <HeaderComponent
-      v-if="isMobile"
-      :using-context="usingContext"
-      @export="handleExport"
+      v-if="isMobile" :using-context="usingContext" @export="handleExport"
       @toggle-using-context="toggleUsingContext"
     />
     <main class="flex-1 overflow-hidden">
-      <div
-        id="scrollRef"
-        ref="scrollRef"
-        class="h-full overflow-hidden overflow-y-auto"
-      >
+      <div id="scrollRef" ref="scrollRef" class="h-full overflow-hidden overflow-y-auto">
         <div
-          id="image-wrapper"
-          class="w-full max-w-screen-xl m-auto dark:bg-[#101014]"
+          id="image-wrapper" class="w-full max-w-screen-xl m-auto dark:bg-[#101014]"
           :class="[isMobile ? 'p-2' : 'p-4']"
         >
           <template v-if="!dataSources.length">
@@ -451,14 +458,8 @@ onUnmounted(() => {
           <template v-else>
             <div>
               <Message
-                v-for="(item, index) of dataSources"
-                :key="index"
-                :date-time="item.dateTime"
-                :text="item.text"
-                :inversion="item.inversion"
-                :error="item.error"
-                :loading="item.loading"
-                @regenerate="onRegenerate(index)"
+                v-for="(item, index) of dataSources" :key="index" :date-time="item.dateTime" :text="item.text"
+                :inversion="item.inversion" :error="item.error" :loading="item.loading" @regenerate="onRegenerate(index)"
                 @delete="handleDelete(index)"
               />
               <div class="sticky bottom-0 left-0 flex justify-center">
@@ -493,10 +494,7 @@ onUnmounted(() => {
             </span>
           </HoverButton>
           <NInput
-            v-model:value="prompt"
-            type="textarea"
-            :autosize="{ minRows: 1, maxRows: 2 }"
-            :placeholder="placeholder"
+            v-model:value="prompt" type="textarea" :autosize="{ minRows: 1, maxRows: 2 }" :placeholder="placeholder"
             @keypress="handleEnter"
           />
           <NButton type="primary" :disabled="buttonDisabled" @click="handleSubmit">
