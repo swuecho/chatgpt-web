@@ -9,9 +9,10 @@ import { useChat } from './hooks/useChat'
 import { useCopyCode } from './hooks/useCopyCode'
 import { useUsingContext } from './hooks/useUsingContext'
 import HeaderComponent from './components/Header/index.vue'
+import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore } from '@/store'
-import { fetchChatAPIProcess } from '@/api'
+import { fetchChatAPI, fetchChatAPIProcess } from '@/api'
 import { t } from '@/locales'
 
 let controller = new AbortController()
@@ -27,7 +28,7 @@ const chatStore = useChatStore()
 useCopyCode()
 
 const { isMobile } = useBasicLayout()
-const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat()
+const { addChat, updateChat, updateChatSome } = useChat()
 const { scrollRef, scrollToBottom } = useScroll()
 const { usingContext, toggleUsingContext } = useUsingContext()
 // session uuid
@@ -44,15 +45,13 @@ function handleSubmit() {
 }
 
 async function onConversation() {
-  let message = prompt.value
+  const message = prompt.value
 
   if (loading.value)
     return
 
   if (!message || message.trim() === '')
     return
-
-  controller = new AbortController()
 
   const chatUuid = Date.now()
 
@@ -78,12 +77,13 @@ async function onConversation() {
 
   if (lastContext && usingContext.value)
     options = { ...lastContext }
-  options.uuid = sessionUuid
+  options.uuid = sessionUuid.toString()
 
+  // add a blank response
   addChat(
     sessionUuid,
     {
-      uuid: chatUuid,
+      uuid: 0,
       dateTime: new Date().toLocaleString(),
       text: '',
       loading: true,
@@ -96,104 +96,25 @@ async function onConversation() {
   scrollToBottom()
 
   try {
-    let lastText = ''
-    const fetchChatAPIOnce = async () => {
-      await fetchChatAPIProcess<Chat.ConversationResponse>({
-        sessionUuid,
-        chatUuid: chatUuid || Date.now(),
-        regenerate: false,
-        prompt: message,
-        options,
-        signal: controller.signal,
-        onDownloadProgress: ({ event }) => {
-          const xhr = event.target
-          const { responseText } = xhr
-          // Always process the final line
-          const lastIndex = responseText.lastIndexOf('\n')
-          let chunk = responseText
-          if (lastIndex !== -1)
-            chunk = responseText.substring(lastIndex)
-
-          try {
-            const data = JSON.parse(chunk)
-            updateChat(
-              sessionUuid,
-              dataSources.value.length - 1,
-              {
-                uuid: chatUuid,
-                dateTime: new Date().toLocaleString(),
-                text: lastText + data.text ?? '',
-                inversion: false,
-                error: false,
-                loading: false,
-                conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
-                requestOptions: { prompt: message, options: { ...options } },
-              },
-            )
-
-            if (openLongReply && data.detail.choices[0].finish_reason === 'length') {
-              options.parentMessageId = data.id
-              lastText = data.text
-              message = ''
-              return fetchChatAPIOnce()
-            }
-
-            scrollToBottom()
-          }
-          catch (error) {
-            //
-          }
-        },
-      })
-    }
-
-    await fetchChatAPIOnce()
-  }
-  catch (error: any) {
-    const errorMessage = error?.message ?? t('common.wrong')
-
-    if (error.message === 'canceled') {
-      updateChatSome(
-        sessionUuid,
-        dataSources.value.length - 1,
-        {
-          loading: false,
-        },
-      )
-      scrollToBottom()
-      return
-    }
-
-    const currentChat = getChatByUuidAndIndex(sessionUuid, dataSources.value.length - 1)
-
-    if (currentChat?.text && currentChat.text !== '') {
-      updateChatSome(
-        sessionUuid,
-        dataSources.value.length - 1,
-        {
-          text: `${currentChat.text}\n[${errorMessage}]`,
-          error: false,
-          loading: false,
-        },
-      )
-      return
-    }
-
+    const respData = (await fetchChatAPI<any>(sessionUuid, chatUuid, false, message, options)) as any
+    // scrollToBottom()
     updateChat(
       sessionUuid,
       dataSources.value.length - 1,
       {
-        uuid: chatUuid,
+        uuid: respData.chatUuid,
         dateTime: new Date().toLocaleString(),
-        text: errorMessage,
+        text: respData.text,
         inversion: false,
-        error: true,
+        error: false,
         loading: false,
-        conversationOptions: null,
+        conversationOptions: {},
         requestOptions: { prompt: message, options: { ...options } },
-      },
-    )
-    scrollToBottom()
+      })
+  }
+  catch (err: any) {
+    // What's the fuck? response data is in err
+    console.error(err)
   }
   finally {
     loading.value = false

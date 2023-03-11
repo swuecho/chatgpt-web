@@ -1,13 +1,26 @@
 import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
 import { post } from '@/utils/request'
 
-export function fetchChatConfig<T = any>() {
+export function fetchChatConfig<T>() {
   return post<T>({
     url: '/config',
   })
 }
 
-export function fetchChatAPIProcess<T = any>(
+export async function fetchChatAPI<T>(
+  sessionUuid: number,
+  chatUuid: number,
+  regenerate: boolean,
+  prompt: string,
+  options?: { conversationId?: string; parentMessageId?: string },
+) {
+  return post<T>({
+    url: '/chat',
+    data: { regenerate, prompt, options, sessionUuid: sessionUuid.toString(), chatUuid: chatUuid.toString() },
+  })
+}
+
+export function fetchChatAPIProcess<T>(
   params: {
     sessionUuid: number
     chatUuid: number
@@ -15,13 +28,14 @@ export function fetchChatAPIProcess<T = any>(
     regenerate: boolean
     options?: { conversationId?: string; parentMessageId?: string }
     signal?: GenericAbortSignal
-    onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void },
+    onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void
+  },
 ) {
   return post<T>({
     url: '/chat_process',
     data: {
-      sessionUuid: params.sessionUuid,
-      chatUuid: params.chatUuid,
+      sessionUuid: params.sessionUuid.toString(),
+      chatUuid: params.chatUuid.toString(),
       regenerate: params.regenerate,
       prompt: params.prompt,
       options: params.options,
