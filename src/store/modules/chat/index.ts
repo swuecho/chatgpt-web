@@ -129,7 +129,7 @@ export const useChatStore = defineStore('chat-store', {
       }
     },
 
-    updateChatSomeByUuid(uuid: number, index: number, chat: Partial<Chat.Chat>) {
+    updateChatPartialByUuid(uuid: number, index: number, chat: Partial<Chat.Chat>) {
       if (!uuid || uuid === 0) {
         if (this.chat.length) {
           this.chat[0].data[index] = { ...this.chat[0].data[index], ...chat }

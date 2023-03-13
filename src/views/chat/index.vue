@@ -28,7 +28,7 @@ const chatStore = useChatStore()
 useCopyCode()
 
 const { isMobile } = useBasicLayout()
-const { addChat, updateChat, updateChatSome } = useChat()
+const { addChat, updateChat, updateChatPartial } = useChat()
 const { scrollRef, scrollToBottom } = useScroll()
 const { usingContext, toggleUsingContext } = useUsingContext()
 // session uuid
@@ -205,7 +205,7 @@ async function onRegenerate(index: number) {
   }
   catch (error: any) {
     if (error.message === 'canceled') {
-      updateChatSome(
+      updateChatPartial(
         sessionUuid,
         index,
         {
