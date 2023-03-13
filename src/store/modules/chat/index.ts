@@ -60,7 +60,6 @@ export const useChatStore = defineStore('chat-store', {
       if (index !== -1) {
         this.history[index] = { ...this.history[index], ...edit }
         this.recordState()
-        renameChatSession(this.history[index].uuid, this.history[index].title)
       }
     },
 

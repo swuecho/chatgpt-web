@@ -1,6 +1,7 @@
 <script setup lang='ts'>
 import { computed, onMounted } from 'vue'
 import { NInput, NPopconfirm, NScrollbar } from 'naive-ui'
+import { renameChatSession } from '@/api'
 import { SvgIcon } from '@/components/common'
 import { useAppStore, useChatStore } from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
@@ -37,16 +38,24 @@ function handleEdit({ uuid }: Chat.History, isEdit: boolean, event?: MouseEvent)
   event?.stopPropagation()
   chatStore.updateHistory(uuid, { isEdit })
 }
+function handleSave({ uuid, title }: Chat.History, isEdit: boolean, event?: MouseEvent) {
+  event?.stopPropagation()
+  chatStore.updateHistory(uuid, { isEdit })
+  // should move to store
+  renameChatSession(uuid, title)
+}
 
 function handleDelete(index: number, event?: MouseEvent | TouchEvent) {
   event?.stopPropagation()
   chatStore.deleteHistory(index)
 }
 
-function handleEnter({ uuid }: Chat.History, isEdit: boolean, event: KeyboardEvent) {
+function handleEnter({ uuid, title }: Chat.History, isEdit: boolean, event: KeyboardEvent) {
   event?.stopPropagation()
-  if (event.key === 'Enter')
+  if (event.key === 'Enter') {
     chatStore.updateHistory(uuid, { isEdit })
+    renameChatSession(uuid, title)
+  }
 }
 
 function isActive(uuid: string) {
@@ -84,7 +93,7 @@ function isActive(uuid: string) {
             </div>
             <div v-if="isActive(item.uuid)" class="absolute z-10 flex visible right-1">
               <template v-if="item.isEdit">
-                <button class="p-1" @click="handleEdit(item, false, $event)">
+                <button class="p-1" @click="handleSave(item, false, $event)">
                   <SvgIcon icon="ri:save-line" />
                 </button>
               </template>

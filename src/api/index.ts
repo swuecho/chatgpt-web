@@ -86,7 +86,7 @@ export const deleteChatSession = async (uuid: string) => {
 export const createChatSession = async (uuid: string, name: string) => {
   try {
     const response = await axios.post(`${baseURL}/uuid/chat_sessions`, {
-      uuid: uuid.toString(),
+      uuid,
       topic: name,
     })
     return response.data

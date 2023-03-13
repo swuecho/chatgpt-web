@@ -1,6 +1,8 @@
 <script setup lang='ts'>
 import type { CSSProperties } from 'vue'
 import { computed, watch } from 'vue'
+import { v4 as uuidv4 } from 'uuid'
+
 import { NButton, NLayoutSider } from 'naive-ui'
 import List from './List.vue'
 import Footer from './Footer.vue'
@@ -15,7 +17,7 @@ const { isMobile } = useBasicLayout()
 const collapsed = computed(() => appStore.siderCollapsed)
 
 function handleAdd() {
-  chatStore.addHistory({ title: 'New Chat', uuid: Date.now(), isEdit: false })
+  chatStore.addHistory({ title: 'New Chat', uuid: uuidv4(), isEdit: false })
 }
 
 function handleUpdateCollapsed() {
