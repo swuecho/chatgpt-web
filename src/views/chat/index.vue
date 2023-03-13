@@ -291,7 +291,7 @@ function handleDelete(index: number) {
     content: t('chat.deleteMessageConfirm'),
     positiveText: t('common.yes'),
     negativeText: t('common.no'),
-    onPositiveClick: () => {
+    onPositiveClick: async () => {
       chatStore.deleteChatByUuid(sessionUuid, index)
     },
   })

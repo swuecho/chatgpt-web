@@ -24,6 +24,28 @@ export const useChatStore = defineStore('chat-store', {
   },
 
   actions: {
+    async syncHistory() {
+      const sessions = await GetChatSessionsByUserId()
+      if (sessions.length <= 0)
+        return
+
+      let uuid = null
+      this.history = []
+      this.chat = []
+      await sessions.forEach(async (r: Chat.History) => {
+        this.history.unshift(r)
+        uuid = r.uuid
+        const chatData = (await GetChatHistory(r.uuid))
+        this.chat.unshift({ uuid: r.uuid, data: chatData })
+      })
+      if (uuid == null) {
+        uuid = Date.now()
+        this.addHistory({ title: 'New Chat', uuid: Date.now(), isEdit: false })
+      }
+
+      this.active = uuid
+      this.reloadRoute(uuid)
+    },
     addHistory(history: Chat.History, chatData: Chat.Chat[] = []) {
       this.history.unshift(history)
       this.chat.unshift({ uuid: history.uuid, data: chatData })
@@ -160,9 +182,10 @@ export const useChatStore = defineStore('chat-store', {
 
       const chatIndex = this.chat.findIndex(item => item.uuid === uuid)
       if (chatIndex !== -1) {
-        const chatData = this.chat[index].data
+        const chatData = this.chat[chatIndex].data
         if (chatData)
           await deleteChatMessage(chatData[index]?.uuid.toString())
+        chatData.splice(index, 1)
         this.recordState()
       }
     },
