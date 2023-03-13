@@ -11,22 +11,22 @@ export function fetchChatConfig<T>() {
 }
 
 export async function fetchChatAPI<T>(
-  sessionUuid: number,
-  chatUuid: number,
+  sessionUuid: string,
+  chatUuid: string,
   regenerate: boolean,
   prompt: string,
   options?: { conversationId?: string; parentMessageId?: string },
 ) {
   return post<T>({
     url: '/chat',
-    data: { regenerate, prompt, options, sessionUuid: sessionUuid.toString(), chatUuid: chatUuid.toString() },
+    data: { regenerate, prompt, options, sessionUuid, chatUuid },
   })
 }
 
 export function fetchChatAPIProcess<T>(
   params: {
-    sessionUuid: number
-    chatUuid: number
+    sessionUuid: string
+    chatUuid: string
     prompt: string
     regenerate: boolean
     options?: { conversationId?: string; parentMessageId?: string }
@@ -61,9 +61,67 @@ export function fetchVerify<T>(token: string) {
   })
 }
 
+export const getChatSessionsByUserId = async (userId: number) => {
+  try {
+    const response = await axios.get(`${baseURL}/chat_sessions/users/${userId}`)
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+export const deleteChatSession = async (uuid: string) => {
+  try {
+    const response = await axios.delete(`${baseURL}/uuid/chat_sessions/${uuid}`)
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+export const createChatSession = async (uuid: string, name: string) => {
+  try {
+    const response = await axios.post(`${baseURL}/uuid/chat_sessions`, {
+      uuid: uuid.toString(),
+      topic: name,
+    })
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+export const renameChatSession = async (uuid: string, name: string) => {
+  try {
+    const response = await axios.put(`${baseURL}/uuid/chat_sessions/${uuid}`, { topic: name })
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
 export const deleteChatMessage = async (uuid: string) => {
   try {
     const response = await axios.delete(`${baseURL}/uuid/chat_messages/${uuid}`)
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+export const getChatHistory = async (uuid: string) => {
+  try {
+    const response = await axios.get(`${baseURL}/uuid/chat_messages/chat_sessions/${uuid}`)
     return response.data
   }
   catch (error) {

@@ -1,7 +1,7 @@
 declare namespace Chat {
 
 	interface Chat {
-		uuid: number,
+		uuid: string,
 		dateTime: string
 		text: string
 		inversion?: boolean
@@ -14,13 +14,13 @@ declare namespace Chat {
 	interface History {
 		title: string
 		isEdit: boolean
-		uuid: number
+		uuid: string
 	}
 
 	interface ChatState {
-		active: number | null
+		active: string | null
 		history: History[]
-		chat: { uuid: number; data: Chat[] }[]
+		chat: { uuid: string; data: Chat[] }[]
 	}
 
 	interface ConversationRequest {
@@ -32,6 +32,7 @@ declare namespace Chat {
 	interface ConversationResponse {
 		conversationId: string
 		detail: {
+			// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 			choices: { finish_reason: string; index: number; logprobs: any; text: string }[]
 			created: number
 			id: string

@@ -1,5 +1,6 @@
 <script setup lang='ts'>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { v4 as uuidv4 } from 'uuid'
 import { useRoute } from 'vue-router'
 import { NButton, NInput, useDialog, useMessage } from 'naive-ui'
 import html2canvas from 'html2canvas'
@@ -33,7 +34,7 @@ const { scrollRef, scrollToBottom } = useScroll()
 const { usingContext, toggleUsingContext } = useUsingContext()
 // session uuid
 const { uuid } = route.params as { uuid: string }
-const sessionUuid = +uuid
+const sessionUuid = uuid
 const dataSources = computed(() => chatStore.getChatByUuid(sessionUuid))
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !item.error)))
 
@@ -53,7 +54,7 @@ async function onConversation() {
   if (!message || message.trim() === '')
     return
 
-  const chatUuid = Date.now()
+  const chatUuid = uuidv4()
 
   addChat(
     sessionUuid,
@@ -83,7 +84,7 @@ async function onConversation() {
   addChat(
     sessionUuid,
     {
-      uuid: 0,
+      uuid: '',
       dateTime: new Date().toLocaleString(),
       text: '',
       loading: true,
@@ -158,7 +159,7 @@ async function onRegenerate(index: number) {
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         sessionUuid,
-        chatUuid: chatUuid || Date.now(),
+        chatUuid: chatUuid || uuidv4(),
         regenerate: true,
         prompt: message,
         options,
@@ -177,7 +178,7 @@ async function onRegenerate(index: number) {
               sessionUuid,
               index,
               {
-                uuid: chatUuid || Date.now(),
+                uuid: chatUuid || uuidv4(),
                 dateTime: new Date().toLocaleString(),
                 text: lastText + data.text ?? '',
                 inversion: false,

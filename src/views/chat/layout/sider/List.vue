@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { NInput, NPopconfirm, NScrollbar } from 'naive-ui'
 import { SvgIcon } from '@/components/common'
 import { useAppStore, useChatStore } from '@/store'
@@ -11,6 +11,15 @@ const appStore = useAppStore()
 const chatStore = useChatStore()
 
 const dataSources = computed(() => chatStore.history)
+
+onMounted(async () => {
+  await handleSyncChat()
+})
+async function handleSyncChat() {
+  // if (chatStore.history.length == 1 && chatStore.history[0].title == 'New Chat'
+  //   && chatStore.chat[0].data.length <= 0)
+  await chatStore.syncHistory()
+}
 
 async function handleSelect({ uuid }: Chat.History) {
   if (isActive(uuid))
@@ -40,7 +49,7 @@ function handleEnter({ uuid }: Chat.History, isEdit: boolean, event: KeyboardEve
     chatStore.updateHistory(uuid, { isEdit })
 }
 
-function isActive(uuid: number) {
+function isActive(uuid: string) {
   return chatStore.active === uuid
 }
 </script>
