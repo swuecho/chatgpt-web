@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { getLocalState, setLocalState } from './helper'
 import { router } from '@/router'
+import { deleteChatMessage } from '@/api'
 
 export const useChatStore = defineStore('chat-store', {
   state: (): Chat.ChatState => getLocalState(),
@@ -145,10 +146,13 @@ export const useChatStore = defineStore('chat-store', {
       }
     },
 
-    deleteChatByUuid(uuid: number, index: number) {
+    async deleteChatByUuid(uuid: number, index: number) {
       if (!uuid || uuid === 0) {
         if (this.chat.length) {
-          const removed = this.chat[0].data.splice(index, 1)
+          const chatData = this.chat[0].data
+          if (chatData)
+            await deleteChatMessage(chatData[index].toString())
+          chatData.splice(index, 1)
           this.recordState()
         }
         return
@@ -156,7 +160,9 @@ export const useChatStore = defineStore('chat-store', {
 
       const chatIndex = this.chat.findIndex(item => item.uuid === uuid)
       if (chatIndex !== -1) {
-        const removed = this.chat[chatIndex].data.splice(index, 1)
+        const chatData = this.chat[index].data
+        if (chatData)
+          await deleteChatMessage(chatData[index]?.uuid.toString())
         this.recordState()
       }
     },

@@ -1,5 +1,8 @@
 import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
+import axios from 'axios'
 import { post } from '@/utils/request'
+
+const baseURL = import.meta.env.VITE_GLOB_API_URL
 
 export function fetchChatConfig<T>() {
   return post<T>({
@@ -56,4 +59,15 @@ export function fetchVerify<T>(token: string) {
     url: '/verify',
     data: { token },
   })
+}
+
+export const deleteChatMessage = async (uuid: string) => {
+  try {
+    const response = await axios.delete(`${baseURL}/uuid/chat_messages/${uuid}`)
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
 }
