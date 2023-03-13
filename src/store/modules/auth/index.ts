@@ -15,6 +15,9 @@ export const useAuthStore = defineStore('auth-store', {
   }),
 
   actions: {
+    // This code is used to fetch the session on the server.
+    // It is used to determine whether or not the user is logged in.
+
     async getSession() {
       try {
         const { data } = await fetchSession<{ auth: boolean }>()

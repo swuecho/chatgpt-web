@@ -278,7 +278,10 @@ function handleExport() {
     },
   })
 }
-
+// The user wants to delete the message with the given index.
+// If the message is already being deleted, we ignore the request.
+// If the user confirms that they want to delete the message, we call
+// the deleteChatByUuid function from the chat store.
 function handleDelete(index: number) {
   if (loading.value)
     return
