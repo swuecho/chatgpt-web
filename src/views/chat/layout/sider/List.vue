@@ -28,6 +28,7 @@ async function handleSelect({ uuid }: Chat.History) {
 
   if (chatStore.active)
     chatStore.updateChatSession(chatStore.active, { isEdit: false })
+
   await chatStore.setActive(uuid)
 
   if (isMobile.value)

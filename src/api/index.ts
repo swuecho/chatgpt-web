@@ -129,3 +129,59 @@ export const getChatMessagesBySessionUUID = async (uuid: string) => {
     throw error
   }
 }
+
+// getUserActiveChatSession
+export const getUserActiveChatSession = async (userId: number) => {
+  try {
+    const response = await axios.get(`${baseURL}/uuid/user_active_chat_session/${userId}`)
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+// createOrUpdateUserActiveChatSession
+export const createOrUpdateUserActiveChatSession = async (userId: number, chatSessionUuid: string) => {
+  try {
+    const response = await axios.put(`${baseURL}/uuid/user_active_chat_session`, {
+      chatSessionUuid,
+      userId,
+    })
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+// postUserActiveChatSession
+export const postUserActiveChatSession = async (userId: number, chatSessionUuid: string) => {
+  try {
+    const response = await axios.post(`${baseURL}/uuid/user_active_chat_session`, {
+      chatSessionUuid,
+      userId,
+    })
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+// putUserActiveChatSession
+export const putUserActiveChatSession = async (userId: number, chatSessionUuid: string) => {
+  try {
+    const response = await axios.put(`${baseURL}/uuid/user_active_chat_session/${userId}`, {
+      chatSessionUuid,
+    })
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}

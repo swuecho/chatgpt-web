@@ -5,10 +5,12 @@ import { getLocalState, setLocalState } from './helper'
 import { router } from '@/router'
 import {
   createChatSession,
+  createOrUpdateUserActiveChatSession,
   deleteChatMessage,
   deleteChatSession,
   getChatMessagesBySessionUUID as getChatSessionHistory,
   getChatSessionsByUserId,
+  getUserActiveChatSession,
   renameChatSession,
 } from '@/api'
 
@@ -64,7 +66,13 @@ export const useChatStore = defineStore('chat-store', {
         this.addChatSession({ title: 'New Chat', isEdit: false, uuid })
       }
 
-      this.active = this.history[0].uuid
+      let active_session_uuid = this.history[0].uuid
+      const active_session = await getUserActiveChatSession(0)
+
+      if (active_session)
+        active_session_uuid = active_session.ChatSessionUuid
+
+      this.active = active_session_uuid
       this.reloadRoute(this.active)
     },
 
@@ -119,6 +127,7 @@ export const useChatStore = defineStore('chat-store', {
 
     async setActive(uuid: string) {
       this.active = uuid
+      await createOrUpdateUserActiveChatSession(0, uuid)
       return await this.reloadRoute(uuid)
     },
 
