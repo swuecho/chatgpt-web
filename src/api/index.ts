@@ -15,10 +15,18 @@ export async function fetchChatAPI<T>(
   prompt: string,
   options?: { conversationId?: string; parentMessageId?: string },
 ) {
-  return request.post(
-    '/chat',
-    { regenerate, prompt, options, sessionUuid, chatUuid },
-  )
+  try {
+    const response = await request.post(
+      '/chat',
+      { regenerate, prompt, options, sessionUuid, chatUuid },
+    )
+
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
 }
 
 export function fetchChatAPIProcess<T>(

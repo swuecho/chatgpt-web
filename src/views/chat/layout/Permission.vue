@@ -91,12 +91,12 @@ async function handleSignup() {
   }
 }
 
-function handlePress(event: KeyboardEvent) {
-  if (event.key === 'Enter' && !event.shiftKey) {
-    event.preventDefault()
-    handleLogin()
-  }
-}
+// function handlePress(event: KeyboardEvent) {
+//   if (event.key === 'Enter' && !event.shiftKey) {
+//     event.preventDefault()
+//     handleLogin()
+//   }
+// }
 </script>
 
 <template>
