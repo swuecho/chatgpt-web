@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import { computed, ref } from 'vue'
 import { NButton, NInput, NModal, useMessage } from 'naive-ui'
-import { fetchVerify } from '@/api'
+import { fetchLogin, fetchSignUp } from '@/api'
 import { useAuthStore } from '@/store'
 import Icon403 from '@/icons/403.vue'
 
@@ -16,27 +16,75 @@ const authStore = useAuthStore()
 const ms = useMessage()
 
 const loading = ref(false)
-const token = ref('')
+const user_email = ref('')
+const user_password = ref('')
 
-const disabled = computed(() => !token.value.trim() || loading.value)
+const user_pass_not_filled = computed(() => !user_email.value.trim() || !user_password.value.trim() || loading.value)
 
-async function handleVerify() {
-  const secretKey = token.value.trim()
+async function handleLogin() {
+  const user_email_v = user_email.value.trim()
+  const user_password_v = user_password.value.trim()
 
-  if (!secretKey)
+  if (!user_email_v || !user_password_v)
     return
+
+  // check user_email_v  is valid email
+  if (!user_email_v.match(/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/)) {
+    ms.error('email is not valid')
+    return
+  }
+  // check password is length >=6 and include a number, a lowercase letter, an uppercase letter, and a special character
+  if (!user_password_v.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,}$/)) {
+    ms.error('password is not valid, it should be length >=6 and include a number, a lowercase letter, an uppercase letter, and a special character')
+    return
+  }
 
   loading.value = true
   try {
-    await fetchVerify(secretKey)
-    authStore.setToken(secretKey)
+    const data = await fetchLogin(user_email_v, user_password_v)
+    authStore.setToken(data.token)
     ms.success('success')
     window.location.reload()
   }
   catch (error: any) {
     ms.error(error.message ?? 'error')
     authStore.removeToken()
-    token.value = ''
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+async function handleSignup() {
+  const user_email_v = user_email.value.trim()
+  const user_password_v = user_password.value.trim()
+
+  if (!user_email_v || !user_password_v)
+    return
+
+  if (!user_email_v || !user_password_v)
+    return
+
+  // check user_email_v  is valid email
+  if (!user_email_v.match(/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/)) {
+    ms.error('email is not valid')
+    return
+  }
+  // check password is length >=6 and include a number, a lowercase letter, an uppercase letter, and a special character
+  if (!user_password_v.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,}$/)) {
+    ms.error('password is not valid, it should be length >=6 and include a number, a lowercase letter, an uppercase letter, and a special character')
+    return
+  }
+  loading.value = true
+  try {
+    const { token } = await fetchSignUp(user_email_v, user_password_v)
+    authStore.setToken(token)
+    ms.success('success')
+    window.location.reload()
+  }
+  catch (error: any) {
+    ms.error(error.message ?? 'error')
+    authStore.removeToken()
   }
   finally {
     loading.value = false
@@ -46,7 +94,7 @@ async function handleVerify() {
 function handlePress(event: KeyboardEvent) {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault()
-    handleVerify()
+    handleLogin()
   }
 }
 </script>
@@ -57,18 +105,26 @@ function handlePress(event: KeyboardEvent) {
       <div class="space-y-4">
         <header class="space-y-2">
           <h2 class="text-2xl font-bold text-center text-slate-800 dark:text-neutral-200">
-            403
+            欢迎
           </h2>
           <p class="text-base text-center text-slate-500 dark:text-slate-500">
             {{ $t('common.unauthorizedTips') }}
           </p>
           <Icon403 class="w-[200px] m-auto" />
         </header>
-        <NInput v-model:value="token" type="text" placeholder="" @keypress="handlePress" />
-
-        <NButton block type="primary" :disabled="disabled" :loading="loading" @click="handleVerify">
-          {{ $t('common.verify') }}
-        </NButton>
+        <NInput v-model:value="user_email" type="text" :minlength="6" :placeholder="$t('common.email_placeholder')" />
+        <NInput
+          v-model:value="user_password" type="text" :minlength="6"
+          :placeholder="$t('common.password_placeholder')"
+        />
+        <div class="flex justify-between">
+          <NButton type="primary" :disabled="user_pass_not_filled" :loading="loading" @click="handleSignup">
+            {{ $t('common.signup') }}
+          </NButton>
+          <NButton type="primary" :disabled="user_pass_not_filled" :loading="loading" @click="handleLogin">
+            {{ $t('common.login') }}
+          </NButton>
+        </div>
       </div>
     </div>
   </NModal>

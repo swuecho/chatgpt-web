@@ -13,7 +13,12 @@ export default {
     success: '操作成功',
     failed: '操作失败',
     verify: '验证',
-    unauthorizedTips: '未经授权，请先进行验证。',
+    login: '登录',
+    logout: '登出',
+    signup: '注册',
+    email_placeholder: '请输入邮箱',
+    password_placeholder: '请输入密码',
+    unauthorizedTips: '请注册或者登录',
   },
   chat: {
     placeholder: '来说点什么吧...（Shift + Enter = 换行）',
