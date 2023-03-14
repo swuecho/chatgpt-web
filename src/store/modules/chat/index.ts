@@ -6,7 +6,7 @@ import { router } from '@/router'
 import {
   createChatSession,
   createOrUpdateUserActiveChatSession,
-  deleteChatMessage,
+  deleteChatData,
   deleteChatSession,
   getChatMessagesBySessionUUID as getChatSessionHistory,
   getChatSessionsByUserId,
@@ -218,7 +218,7 @@ export const useChatStore = defineStore('chat-store', {
         if (this.chat.length) {
           const chatData = this.chat[0].data
           if (chatData)
-            await deleteChatMessage(chatData[index].toString())
+            await deleteChatData(chatData[index])
           chatData.splice(index, 1)
           this.recordState()
         }
@@ -229,7 +229,7 @@ export const useChatStore = defineStore('chat-store', {
       if (chatIndex !== -1) {
         const chatData = this.chat[chatIndex].data
         if (chatData)
-          await deleteChatMessage(chatData[index]?.uuid.toString())
+          await deleteChatData(chatData[index])
         chatData.splice(index, 1)
         this.recordState()
       }

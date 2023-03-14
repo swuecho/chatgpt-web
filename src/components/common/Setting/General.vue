@@ -184,11 +184,7 @@ function handleImportButtonClick(): void {
         <span class="flex-shrink-0 w-[100px]">{{ $t('setting.theme') }}</span>
         <div class="flex flex-wrap items-center gap-4">
           <template v-for="item of themeOptions" :key="item.key">
-            <NButton
-              size="small"
-              :type="item.key === theme ? 'primary' : undefined"
-              @click="appStore.setTheme(item.key)"
-            >
+            <NButton size="small" :type="item.key === theme ? 'primary' : undefined" @click="appStore.setTheme(item.key)">
               <template #icon>
                 <SvgIcon :icon="item.icon" />
               </template>
@@ -201,8 +197,7 @@ function handleImportButtonClick(): void {
         <div class="flex flex-wrap items-center gap-4">
           <template v-for="item of languageOptions" :key="item.key">
             <NButton
-              size="small"
-              :type="item.key === language ? 'primary' : undefined"
+              size="small" :type="item.key === language ? 'primary' : undefined"
               @click="appStore.setLanguage(item.key)"
             >
               {{ item.label }}

@@ -119,6 +119,23 @@ export const deleteChatMessage = async (uuid: string) => {
   }
 }
 
+export const deleteChatPrompt = async (uuid: string) => {
+  try {
+    const response = await axios.delete(`${baseURL}/uuid/chat_prompts/${uuid}`)
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+export const deleteChatData = async (chat: Chat.Chat) => {
+  if (chat?.isPrompt)
+    await deleteChatMessage(chat.uuid)
+  else
+    await deleteChatPrompt(chat.uuid)
+}
 export const getChatMessagesBySessionUUID = async (uuid: string) => {
   try {
     const response = await axios.get(`${baseURL}/uuid/chat_messages/chat_sessions/${uuid}`)
