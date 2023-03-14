@@ -22,7 +22,7 @@ const openLongReply = import.meta.env.VITE_GLOB_OPEN_LONG_REPLY === 'true'
 
 const route = useRoute()
 const dialog = useDialog()
-const ms = useMessage()
+const nui_msg = useMessage()
 
 const chatStore = useChatStore()
 
@@ -267,11 +267,11 @@ function handleExport() {
         document.body.removeChild(tempLink)
         window.URL.revokeObjectURL(imgUrl)
         d.loading = false
-        ms.success(t('chat.exportSuccess'))
+        nui_msg.success(t('chat.exportSuccess'))
         Promise.resolve()
       }
       catch (error: any) {
-        ms.error(t('chat.exportFailed'))
+        nui_msg.error(t('chat.exportFailed'))
       }
       finally {
         d.loading = false

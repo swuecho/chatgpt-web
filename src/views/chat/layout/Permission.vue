@@ -26,8 +26,8 @@ async function handleVerify() {
   if (!secretKey)
     return
 
+  loading.value = true
   try {
-    loading.value = true
     await fetchVerify(secretKey)
     authStore.setToken(secretKey)
     ms.success('success')
@@ -66,13 +66,7 @@ function handlePress(event: KeyboardEvent) {
         </header>
         <NInput v-model:value="token" type="text" placeholder="" @keypress="handlePress" />
 
-        <NButton
-          block
-          type="primary"
-          :disabled="disabled"
-          :loading="loading"
-          @click="handleVerify"
-        >
+        <NButton block type="primary" :disabled="disabled" :loading="loading" @click="handleVerify">
           {{ $t('common.verify') }}
         </NButton>
       </div>

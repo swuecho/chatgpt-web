@@ -1,8 +1,6 @@
 import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
-import axios from 'axios'
+import request from '@/utils/request/axios'
 import { post } from '@/utils/request'
-
-const baseURL = import.meta.env.VITE_GLOB_API_URL
 
 export function fetchChatConfig<T>() {
   return post<T>({
@@ -17,10 +15,10 @@ export async function fetchChatAPI<T>(
   prompt: string,
   options?: { conversationId?: string; parentMessageId?: string },
 ) {
-  return post<T>({
-    url: '/chat',
-    data: { regenerate, prompt, options, sessionUuid, chatUuid },
-  })
+  return request.post(
+    '/chat',
+    { regenerate, prompt, options, sessionUuid, chatUuid },
+  )
 }
 
 export function fetchChatAPIProcess<T>(
@@ -48,22 +46,20 @@ export function fetchChatAPIProcess<T>(
   })
 }
 
-export function fetchSession<T>() {
-  return post<T>({
-    url: '/session',
-  })
-}
-
-export function fetchVerify<T>(token: string) {
-  return post<T>({
-    url: '/verify',
-    data: { token },
-  })
-}
-
-export const getChatSessionsByUserId = async (userId: number) => {
+export async function fetchVerify(token: string) {
   try {
-    const response = await axios.get(`${baseURL}/chat_sessions/users/${userId}`)
+    const response = await request.post('/verify', { token })
+    return response.data
+  }
+  catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+export const getChatSessionsByUserId = async () => {
+  try {
+    const response = await request.get('/chat_sessions/users')
     return response.data
   }
   catch (error) {
@@ -74,7 +70,7 @@ export const getChatSessionsByUserId = async (userId: number) => {
 
 export const deleteChatSession = async (uuid: string) => {
   try {
-    const response = await axios.delete(`${baseURL}/uuid/chat_sessions/${uuid}`)
+    const response = await request.delete(`/uuid/chat_sessions/${uuid}`)
     return response.data
   }
   catch (error) {
@@ -85,7 +81,7 @@ export const deleteChatSession = async (uuid: string) => {
 
 export const createChatSession = async (uuid: string, name: string) => {
   try {
-    const response = await axios.post(`${baseURL}/uuid/chat_sessions`, {
+    const response = await request.post('/uuid/chat_sessions', {
       uuid,
       topic: name,
     })
@@ -99,7 +95,7 @@ export const createChatSession = async (uuid: string, name: string) => {
 
 export const renameChatSession = async (uuid: string, name: string) => {
   try {
-    const response = await axios.put(`${baseURL}/uuid/chat_sessions/${uuid}`, { topic: name })
+    const response = await request.put(`/uuid/chat_sessions/${uuid}`, { topic: name })
     return response.data
   }
   catch (error) {
@@ -110,7 +106,7 @@ export const renameChatSession = async (uuid: string, name: string) => {
 
 export const deleteChatMessage = async (uuid: string) => {
   try {
-    const response = await axios.delete(`${baseURL}/uuid/chat_messages/${uuid}`)
+    const response = await request.delete(`/uuid/chat_messages/${uuid}`)
     return response.data
   }
   catch (error) {
@@ -121,7 +117,7 @@ export const deleteChatMessage = async (uuid: string) => {
 
 export const deleteChatPrompt = async (uuid: string) => {
   try {
-    const response = await axios.delete(`${baseURL}/uuid/chat_prompts/${uuid}`)
+    const response = await request.delete(`/uuid/chat_prompts/${uuid}`)
     return response.data
   }
   catch (error) {
@@ -138,7 +134,7 @@ export const deleteChatData = async (chat: Chat.Chat) => {
 }
 export const getChatMessagesBySessionUUID = async (uuid: string) => {
   try {
-    const response = await axios.get(`${baseURL}/uuid/chat_messages/chat_sessions/${uuid}`)
+    const response = await request.get(`/uuid/chat_messages/chat_sessions/${uuid}`)
     return response.data
   }
   catch (error) {
@@ -148,9 +144,9 @@ export const getChatMessagesBySessionUUID = async (uuid: string) => {
 }
 
 // getUserActiveChatSession
-export const getUserActiveChatSession = async (userId: number) => {
+export const getUserActiveChatSession = async () => {
   try {
-    const response = await axios.get(`${baseURL}/uuid/user_active_chat_session/${userId}`)
+    const response = await request.get('/uuid/user_active_chat_session')
     return response.data
   }
   catch (error) {
@@ -160,11 +156,10 @@ export const getUserActiveChatSession = async (userId: number) => {
 }
 
 // createOrUpdateUserActiveChatSession
-export const createOrUpdateUserActiveChatSession = async (userId: number, chatSessionUuid: string) => {
+export const createOrUpdateUserActiveChatSession = async (chatSessionUuid: string) => {
   try {
-    const response = await axios.put(`${baseURL}/uuid/user_active_chat_session`, {
+    const response = await request.put('/uuid/user_active_chat_session', {
       chatSessionUuid,
-      userId,
     })
     return response.data
   }
@@ -175,11 +170,10 @@ export const createOrUpdateUserActiveChatSession = async (userId: number, chatSe
 }
 
 // postUserActiveChatSession
-export const postUserActiveChatSession = async (userId: number, chatSessionUuid: string) => {
+export const postUserActiveChatSession = async (chatSessionUuid: string) => {
   try {
-    const response = await axios.post(`${baseURL}/uuid/user_active_chat_session`, {
+    const response = await request.post('/uuid/user_active_chat_session', {
       chatSessionUuid,
-      userId,
     })
     return response.data
   }
@@ -190,9 +184,9 @@ export const postUserActiveChatSession = async (userId: number, chatSessionUuid:
 }
 
 // putUserActiveChatSession
-export const putUserActiveChatSession = async (userId: number, chatSessionUuid: string) => {
+export const putUserActiveChatSession = async (chatSessionUuid: string) => {
   try {
-    const response = await axios.put(`${baseURL}/uuid/user_active_chat_session/${userId}`, {
+    const response = await request.put('/uuid/user_active_chat_session/', {
       chatSessionUuid,
     })
     return response.data

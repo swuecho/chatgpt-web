@@ -49,7 +49,7 @@ export const useChatStore = defineStore('chat-store', {
     },
 
     async syncChatSessions() {
-      const sessions = await getChatSessionsByUserId(0)
+      const sessions = await getChatSessionsByUserId()
       if (sessions.length <= 0)
         return
 
@@ -67,7 +67,7 @@ export const useChatStore = defineStore('chat-store', {
       }
 
       let active_session_uuid = this.history[0].uuid
-      const active_session = await getUserActiveChatSession(0)
+      const active_session = await getUserActiveChatSession()
 
       if (active_session)
         active_session_uuid = active_session.ChatSessionUuid
@@ -127,7 +127,7 @@ export const useChatStore = defineStore('chat-store', {
 
     async setActive(uuid: string) {
       this.active = uuid
-      await createOrUpdateUserActiveChatSession(0, uuid)
+      await createOrUpdateUserActiveChatSession(uuid)
       return await this.reloadRoute(uuid)
     },
 
