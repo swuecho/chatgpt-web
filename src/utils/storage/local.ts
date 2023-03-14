@@ -1,6 +1,6 @@
 import { deCrypto, enCrypto } from '../crypto'
 
-interface StorageData<T = any> {
+interface StorageData<T> {
   data: T
   expire: number | null
 }
@@ -16,7 +16,7 @@ export function createLocalStorage(options?: { expire?: number | null; crypto?: 
     options,
   )
 
-  function set<T = any>(key: string, data: T) {
+  function set<T>(key: string, data: T) {
     const storageData: StorageData<T> = {
       data,
       expire: expire !== null ? new Date().getTime() + expire * 1000 : null,
@@ -29,7 +29,8 @@ export function createLocalStorage(options?: { expire?: number | null; crypto?: 
   function get(key: string) {
     const json = window.localStorage.getItem(key)
     if (json) {
-      let storageData: StorageData | null = null
+      // rome-ignore lint/suspicious/noExplicitAny: <explanation>
+      let storageData: StorageData<any> | null = null
 
       try {
         storageData = crypto ? deCrypto(json) : JSON.parse(json)

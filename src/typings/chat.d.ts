@@ -9,6 +9,7 @@ declare namespace Chat {
 		loading?: boolean
 		conversationOptions?: ConversationRequest | null
 		requestOptions: { prompt: string; options?: ConversationRequest | null }
+		isPrompt?: boolean
 	}
 
 	interface History {

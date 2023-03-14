@@ -2,6 +2,7 @@ import CryptoJS from 'crypto-js'
 
 const CryptoSecret = '__CRYPTO_SECRET__'
 
+// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function enCrypto(data: any) {
   const str = JSON.stringify(data)
   return CryptoJS.AES.encrypt(str, CryptoSecret).toString()
