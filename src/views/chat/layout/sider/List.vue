@@ -19,7 +19,7 @@ onMounted(async () => {
 async function handleSyncChat() {
   // if (chatStore.history.length == 1 && chatStore.history[0].title == 'New Chat'
   //   && chatStore.chat[0].data.length <= 0)
-  await chatStore.syncHistory()
+  await chatStore.syncChatSessions()
 }
 
 async function handleSelect({ uuid }: Chat.History) {
@@ -27,7 +27,7 @@ async function handleSelect({ uuid }: Chat.History) {
     return
 
   if (chatStore.active)
-    chatStore.updateHistory(chatStore.active, { isEdit: false })
+    chatStore.updateChatSession(chatStore.active, { isEdit: false })
   await chatStore.setActive(uuid)
 
   if (isMobile.value)
@@ -36,24 +36,24 @@ async function handleSelect({ uuid }: Chat.History) {
 
 function handleEdit({ uuid }: Chat.History, isEdit: boolean, event?: MouseEvent) {
   event?.stopPropagation()
-  chatStore.updateHistory(uuid, { isEdit })
+  chatStore.updateChatSession(uuid, { isEdit })
 }
 function handleSave({ uuid, title }: Chat.History, isEdit: boolean, event?: MouseEvent) {
   event?.stopPropagation()
-  chatStore.updateHistory(uuid, { isEdit })
+  chatStore.updateChatSession(uuid, { isEdit })
   // should move to store
   renameChatSession(uuid, title)
 }
 
 function handleDelete(index: number, event?: MouseEvent | TouchEvent) {
   event?.stopPropagation()
-  chatStore.deleteHistory(index)
+  chatStore.deleteChatSession(index)
 }
 
 function handleEnter({ uuid, title }: Chat.History, isEdit: boolean, event: KeyboardEvent) {
   event?.stopPropagation()
   if (event.key === 'Enter') {
-    chatStore.updateHistory(uuid, { isEdit })
+    chatStore.updateChatSession(uuid, { isEdit })
     renameChatSession(uuid, title)
   }
 }
@@ -107,7 +107,7 @@ function isActive(uuid: string) {
                       <SvgIcon icon="ri:delete-bin-line" />
                     </button>
                   </template>
-                  {{ $t('chat.deleteHistoryConfirm') }}
+                  {{ $t('chat.deleteChatSessionsConfirm') }}
                 </NPopconfirm>
               </template>
             </div>

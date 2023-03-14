@@ -20,7 +20,7 @@ const appStore = useAppStore()
 const chatStore = useChatStore()
 
 const collapsed = computed(() => appStore.siderCollapsed)
-const currentChatHistory = computed(() => chatStore.getChatHistoryByCurrentActive)
+const currentChatSession = computed(() => chatStore.getChatSessionByCurrentActive)
 
 function handleUpdateCollapsed() {
   appStore.setSiderCollapsed(!collapsed.value)
@@ -59,7 +59,7 @@ function toggleUsingContext() {
         class="flex-1 px-4 pr-6 overflow-hidden cursor-pointer select-none text-ellipsis whitespace-nowrap"
         @dblclick="onScrollToTop"
       >
-        {{ currentChatHistory?.title ?? '' }}
+        {{ currentChatSession?.title ?? '' }}
       </h1>
       <div class="flex items-center space-x-2">
         <HoverButton @click="toggleUsingContext">

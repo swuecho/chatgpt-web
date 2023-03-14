@@ -32,7 +32,7 @@ export default {
     turnOffContext: '在當前模式下, 發送訊息不會攜帶之前的聊天記錄。',
     deleteMessage: '刪除訊息',
     deleteMessageConfirm: '是否刪除此訊息?',
-    deleteHistoryConfirm: '確定刪除此紀錄?',
+    deleteChatSessionsConfirm: '確定刪除此紀錄?',
   },
   setting: {
     setting: '設定',

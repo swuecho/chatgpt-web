@@ -32,7 +32,7 @@ export default {
     turnOffContext: '当前模式下, 发送消息不会携带之前的聊天记录',
     deleteMessage: '删除消息',
     deleteMessageConfirm: '是否删除此消息?',
-    deleteHistoryConfirm: '确定删除此记录?',
+    deleteChatSessionsConfirm: '确定删除此记录?',
     clearHistoryConfirm: '确定清空聊天记录?',
   },
   setting: {

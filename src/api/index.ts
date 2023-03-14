@@ -119,7 +119,7 @@ export const deleteChatMessage = async (uuid: string) => {
   }
 }
 
-export const getChatHistory = async (uuid: string) => {
+export const getChatMessagesBySessionUUID = async (uuid: string) => {
   try {
     const response = await axios.get(`${baseURL}/uuid/chat_messages/chat_sessions/${uuid}`)
     return response.data

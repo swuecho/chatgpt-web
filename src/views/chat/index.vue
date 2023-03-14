@@ -35,7 +35,7 @@ const { usingContext, toggleUsingContext } = useUsingContext()
 // session uuid
 const { uuid } = route.params as { uuid: string }
 const sessionUuid = uuid
-const dataSources = computed(() => chatStore.getChatByUuid(sessionUuid))
+const dataSources = computed(() => chatStore.getChatSessionByUuid(sessionUuid))
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !item.error)))
 
 const prompt = ref<string>('')
