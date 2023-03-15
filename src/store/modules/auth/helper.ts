@@ -13,3 +13,17 @@ export function setToken(token: string) {
 export function removeToken() {
   return ss.remove(LOCAL_NAME)
 }
+
+const EXPIRE_LOCAL_NAME = 'expiresIn'
+
+export function getExpiresIn() {
+  return ss.get(EXPIRE_LOCAL_NAME)
+}
+
+export function setExpiresIn(expiresIn: number) {
+  return ss.set(EXPIRE_LOCAL_NAME, expiresIn)
+}
+
+export function removeExpiresIn() {
+  return ss.remove(EXPIRE_LOCAL_NAME)
+}

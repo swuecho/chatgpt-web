@@ -11,8 +11,7 @@ service.interceptors.request.use(
 
     // clear token if expired
     const expiresIn = useAuthStore().getExpiresIn()
-
-    if (expiresIn < Math.floor(Date.now() / 1000))
+    if (expiresIn && expiresIn < Date.now() / 1000)
       useAuthStore().removeToken()
 
     if (token)
