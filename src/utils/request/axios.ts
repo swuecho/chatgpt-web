@@ -7,7 +7,14 @@ const service = axios.create({
 
 service.interceptors.request.use(
   (config) => {
-    const token = useAuthStore().token
+    const token = useAuthStore().getToken()
+
+    // clear token if expired
+    const expiresIn = useAuthStore().getExpiresIn()
+
+    if (expiresIn < Math.floor(Date.now() / 1000))
+      useAuthStore().removeToken()
+
     if (token)
       config.headers.Authorization = `Bearer ${token}`
     return config
