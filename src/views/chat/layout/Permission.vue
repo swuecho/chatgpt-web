@@ -41,14 +41,16 @@ async function handleLogin() {
 
   loading.value = true
   try {
-    const data = await fetchLogin(user_email_v, user_password_v)
-    authStore.setToken(data.token)
+    const { accessToken, expiresIn } = await fetchLogin(user_email_v, user_password_v)
+    authStore.setToken(accessToken)
+    authStore.setExpiresIn(expiresIn)
     ms.success('success')
     window.location.reload()
   }
   catch (error: any) {
     ms.error(error.message ?? 'error')
     authStore.removeToken()
+    authStore.removeExpiresIn()
   }
   finally {
     loading.value = false
@@ -77,8 +79,9 @@ async function handleSignup() {
   }
   loading.value = true
   try {
-    const { token } = await fetchSignUp(user_email_v, user_password_v)
-    authStore.setToken(token)
+    const { accessToken, expiresIn } = await fetchSignUp(user_email_v, user_password_v)
+    authStore.setToken(accessToken)
+    authStore.setExpiresIn(expiresIn)
     ms.success('success')
     window.location.reload()
   }
