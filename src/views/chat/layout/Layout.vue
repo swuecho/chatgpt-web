@@ -18,7 +18,8 @@ const { isMobile } = useBasicLayout()
 
 const collapsed = computed(() => appStore.siderCollapsed)
 
-const needPermission = computed(() => !authStore.token)
+// login modal will appear when there is no token
+const needPermission = computed(() => !authStore.token || (authStore.token && authStore.expiresIn < Math.floor(Date.now() / 1000)))
 
 const getMobileClass = computed(() => {
   if (isMobile.value)
