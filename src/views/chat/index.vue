@@ -419,10 +419,10 @@ onUnmounted(() => {
             </span>
           </HoverButton>
           <NInput
-            v-model:value="prompt" type="textarea" :autosize="{ minRows: 1, maxRows: 2 }" :placeholder="placeholder"
+            id="message_textarea" v-model:value="prompt" data-testid="message_textarea" type="textarea" :autosize="{ minRows: 1, maxRows: 2 }" :placeholder="placeholder"
             @keypress="handleEnter"
           />
-          <NButton id="send_message_button" type="primary" :disabled="buttonDisabled" @click="handleSubmit">
+          <NButton id="send_message_button" data-testid="send_message_button" type="primary" :disabled="buttonDisabled" @click="handleSubmit">
             <template #icon>
               <span class="dark:text-black">
                 <SvgIcon icon="ri:send-plane-fill" />

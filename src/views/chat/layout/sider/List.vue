@@ -87,6 +87,7 @@ function isActive(uuid: string) {
               <NInput
                 v-if="item.isEdit"
                 v-model:value="item.title"
+                data-testid="edit_session_topic_input"
                 size="tiny"
                 @keypress="handleEnter(item, false, $event)"
               />
@@ -94,15 +95,15 @@ function isActive(uuid: string) {
             </div>
             <div v-if="isActive(item.uuid)" class="absolute z-10 flex visible right-1">
               <template v-if="item.isEdit">
-                <button class="p-1" @click="handleSave(item, false, $event)">
+                <button class="p-1" data-testid="save_session_topic" @click="handleSave(item, false, $event)">
                   <SvgIcon icon="ri:save-line" />
                 </button>
               </template>
               <template v-else>
-                <button class="p-1">
+                <button class="p-1" data-testid="edit_session_topic">
                   <SvgIcon icon="ri:edit-line" @click="handleEdit(item, true, $event)" />
                 </button>
-                <NPopconfirm placement="bottom" @positive-click="handleDelete(index, $event)">
+                <NPopconfirm placement="bottom" data-testid="confirm_delete_session" @positive-click="handleDelete(index, $event)">
                   <template #trigger>
                     <button class="p-1">
                       <SvgIcon icon="ri:delete-bin-line" />
