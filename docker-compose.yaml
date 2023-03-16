@@ -16,5 +16,5 @@ services:
     ports:
        - 8077:8077
     environment:
-       - OPENAI_API_KEY=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
+        - OPENAI_API_KEY=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
     
