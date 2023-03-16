@@ -5,14 +5,12 @@ import { store } from '@/store'
 export interface AuthState {
   token: string | undefined
   expiresIn: number | undefined
-  session: { auth: boolean }
 }
 
 export const useAuthStore = defineStore('auth-store', {
   state: (): AuthState => ({
     token: getToken(),
     expiresIn: getExpiresIn(),
-    session: { auth: true },
   }),
 
   actions: {

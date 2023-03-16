@@ -45,17 +45,6 @@ router.post('/config', async (req, res) => {
   }
 })
 
-router.post('/session', async (req, res) => {
-  try {
-    const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY
-    const hasAuth = typeof AUTH_SECRET_KEY === 'string' && AUTH_SECRET_KEY.length > 0
-    res.send({ status: 'Success', message: '', data: { auth: hasAuth } })
-  }
-  catch (error) {
-    res.send({ status: 'Fail', message: error.message, data: null })
-  }
-})
-
 router.post('/verify', async (req, res) => {
   try {
     const { token } = req.body as { token: string }

@@ -422,7 +422,7 @@ onUnmounted(() => {
             v-model:value="prompt" type="textarea" :autosize="{ minRows: 1, maxRows: 2 }" :placeholder="placeholder"
             @keypress="handleEnter"
           />
-          <NButton type="primary" :disabled="buttonDisabled" @click="handleSubmit">
+          <NButton id="send_message_button" type="primary" :disabled="buttonDisabled" @click="handleSubmit">
             <template #icon>
               <span class="dark:text-black">
                 <SvgIcon icon="ri:send-plane-fill" />

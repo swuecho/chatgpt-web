@@ -48,7 +48,10 @@ async function handleLogin() {
     window.location.reload()
   }
   catch (error: any) {
-    ms.error(error.message ?? 'error')
+    if (error.response?.status === 401 && error.response?.data === 'invalid email or password: sql: no rows in result set\n')
+      ms.error('请先注册账号')
+    else
+      ms.error(error.message ?? 'error')
     authStore.removeToken()
     authStore.removeExpiresIn()
   }
