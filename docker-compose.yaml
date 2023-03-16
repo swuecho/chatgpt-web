@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  web:
+    container_name: web
+    image: chatgpt_frontend
+    depends_on: 
+      - api
+  api:
+    container_name: api
+    image: chatgpt_backend
+    tty: true
