@@ -4,9 +4,17 @@ services:
   web:
     container_name: web
     image: chatgpt_frontend
+    ports:
+      - 8080:80
     depends_on: 
       - api
   api:
     container_name: api
     image: chatgpt_backend
-    tty: true
+    expose: 
+       - 8077
+    ports:
+       - 8077:8077
+    environment:
+       - OPENAI_API_KEY=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
+    
